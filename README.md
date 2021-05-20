@@ -44,6 +44,13 @@ What I need from a ML configuration library...
 
     You don't want to install a ton of libraries for just configuration management. If you install one, then it
     is better to be just native python.
+
+## 🚫 Limitations
+- `Union` type dataclass fields cannot be parsed from console arguments due to the type ambiguity.
+- `JSON` is the only supported serialization format, although the others can be easily integrated.
+- `List`type with multiple item type annotations are not supported. (e.g. `List[int, str]`).
+- `dict` fields are parsed from console arguments as JSON str without type checking. (e.g `--val_dict '{"a":10, "b":100}'`).
+
 ## 🔍 Examples
 
 ### 👉 Simple Coqpit
@@ -51,7 +58,7 @@ What I need from a ML configuration library...
 import os
 from dataclasses import asdict, dataclass, field
 
-from coqpit.coqpit import MISSING, Coqpit, check_argument
+from coqpit import MISSING, Coqpit, check_argument
 
 
 @dataclass
@@ -182,7 +189,7 @@ import os
 from dataclasses import asdict, dataclass, field
 from typing import List
 
-from coqpit.coqpit import Coqpit, check_argument
+from coqpit import Coqpit, check_argument
 import sys
 
 
@@ -246,11 +253,11 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.argv.extend(['--coqpit.val_a', '222'])
-    sys.argv.extend(['--coqpit.val_b', '999'])
-    sys.argv.extend(['--coqpit.val_c', 'this is different'])
-    sys.argv.extend(['--coqpit.mylist_with_default.0.val_a', '222'])
-    sys.argv.extend(['--coqpit.mylist_with_default.1.val_a', '111'])
+    sys.argv.extend(['--val_a', '222'])
+    sys.argv.extend(['--val_b', '999'])
+    sys.argv.extend(['--val_c', 'this is different'])
+    sys.argv.extend(['--mylist_with_default.0.val_a', '222'])
+    sys.argv.extend(['--mylist_with_default.1.val_a', '111'])
     main()
 ```
 
@@ -258,7 +265,7 @@ if __name__ == '__main__':
 ```python
 import os
 from dataclasses import dataclass
-from coqpit.coqpit import Coqpit, check_argument
+from coqpit import Coqpit, check_argument
 
 
 @dataclass
@@ -284,4 +291,12 @@ if __name__ == '__main__':
     coqpitb.merge(coqpita)
     print(coqpitb.val_a)
     print(coqpitb.pprint())
+```
+
+## Development
+
+Install the pre-commit hook to automatically check your commits for style and hinting issues:
+
+```bash
+$ python .pre-commit-2.12.1.pyz install
 ```
